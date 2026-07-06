@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tabpack-paper"
+version = "0.0.3"
+requires-python = ">=3.12,<4"
+dependencies = [
+    "delu>=0.0.26,<0.1.0",
+    "loguru>=0.7.3,<1",
+    "numpy>=2,<3",
+    "optuna>=4,<5",
+    "scikit-learn>=1.3,<2",
+    "rtdl_num_embeddings>=0.0.11,<0.1",
+    "rtdl_revisiting_models>=0.0.2,<0.1",
+    "scipy>=1.11,<2",
+    "tabm>=0.0.3,<0.1",
+    "tensorboard==2.19.0",
+    "torch>=2.0.1,<3",
+    "tqdm>=4.66,<5",
+]
+
+[dependency-groups]
+dev = [
+    "bokeh>=3.7.3,<4",
+    "cyclopts>=3.21.0",
+    "holoviews>=1.20.2,<2",
+    "hvplot>=0.11.3,<1",
+    "ipdb>=0.13.13,<1",
+    "ipython>=9.3.0,<10",
+    "ipywidgets>=8.1.7,<9",
+    "jupyterlab>=4.4.3,<5",
+    "matplotlib>=3.10.3,<4",
+    "mypy>=1.16.1,<2",
+    "nbclassic>=1.3.1,<2",
+    "notebook>=7.4.3,<8",
+    "pandas>=2.3.0,<3",
+    "panel>=1.7.1,<2",
+    "plotnine>=0.14.5,<1",
+    "polars>=1.30.0,<2",
+    "pudb>=2025.1",
+    "pytest>=8.4.0,<9",
+    "ruff>=0.12.0,<1",
+    "seaborn>=0.13.2,<1",
+    "setuptools>=80.9.0",
+]
+
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
+exclude = ["^local/*", "^src/vendor/*"]
+
+[tool.pyright]
+exclude = [
+    # Default rules
+    '**/node_modules',
+    '**/__pycache__',
+    '**/.*',
+    # Custom rules
+    "cache",
+    "data",
+    "local",
+    "src/vendor",
+    "**/exp",
+]
+typeCheckingMode = "standard"
+
+[tool.ruff]
+line-length = 88
+extend-exclude = ["src/vendor"]
+
+[tool.ruff.lint]
+extend-select = ["RUF", "UP", "E501", "E731"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ty.rules]
+unused-ignore-comment = "ignore"
+unused-type-ignore-comment = "ignore"
+
+[tool.ty.src]
+exclude = ["src/vendor"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["lib", "project", "vendor"]
+
+[tool.uv]
+package = true
+python-preference = "only-managed"

@@ -1,0 +1,131 @@
+{
+    "function": "project.tabpack.main",
+    "n_seeds": 5,
+    "base_config": {
+        "n_models": 8,
+        "batch_size": 512,
+        "n_epochs": -1,
+        "patience": 16,
+        "amp_dtype": "bfloat16",
+        "save_all_predictions": true,
+        "track_online_ensemble_history": true,
+        "track_experiments": true,
+        "data": {
+            "path": "data/diamond",
+            "num_policy": "noisy-quantile",
+            "extract_bin_from_num": true,
+            "bin_policy": "convert-to-cat",
+            "cat_policy": "ordinal",
+            "cache": true
+        },
+        "model": {
+            "activation": "ReLU",
+            "d_block": 384
+        },
+        "optimizer": {
+            "type": "MuonAdamWPack",
+            "shared_step": true
+        },
+        "online_ensembles": {
+            "greedy": {
+                "type": "greedy",
+                "update_type": "latest",
+                "include_current_ensemble_in_pool": true,
+                "patience": 32,
+                "options": {
+                    "max_ensemble_size": 32
+                }
+            }
+        },
+        "configs": [
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0008428303845098716,
+                    "weight_decay": 0.018662266976517967,
+                    "muon_lr": 0.019578897201213006
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 4,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0021188277784090774,
+                    "weight_decay": 0.0022637229697395483,
+                    "muon_lr": 0.019047678084282035
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0007744310329461804,
+                    "weight_decay": 0.0019134694478070977,
+                    "muon_lr": 0.014187079131473247
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.002984833645205143,
+                    "weight_decay": 0.0030724074111466446,
+                    "muon_lr": 0.017026254807538856
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 4,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0011779100684624346,
+                    "weight_decay": 0.4196274596407562,
+                    "muon_lr": 0.00385514368272862
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0006043400175002276,
+                    "weight_decay": 0.0013609334974844284,
+                    "muon_lr": 0.03977331310947928
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0002557332776646808,
+                    "weight_decay": 0.0030312130880886085,
+                    "muon_lr": 0.03915461419278378
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00020639737255578346,
+                    "weight_decay": 0.01598742434753529,
+                    "muon_lr": 0.07220758740267613
+                }
+            }
+        ]
+    }
+}

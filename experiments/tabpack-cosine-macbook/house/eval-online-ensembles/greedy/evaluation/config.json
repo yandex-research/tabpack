@@ -1,0 +1,138 @@
+{
+    "function": "project.tabpack.main",
+    "n_seeds": 5,
+    "base_config": {
+        "n_models": 6,
+        "batch_size": 256,
+        "eval_batch_size": 256,
+        "n_epochs": -1,
+        "patience": 16,
+        "amp_dtype": "bfloat16",
+        "track_online_ensemble_history": true,
+        "track_experiments": true,
+        "data": {
+            "path": "data/house",
+            "num_policy": "noisy-quantile",
+            "extract_bin_from_num": true,
+            "bin_policy": "convert-to-cat",
+            "cache": true
+        },
+        "model": {
+            "activation": "ReLU",
+            "d_block": 384,
+            "num_embeddings": {
+                "type": "CosineEmbeddingsPack",
+                "bias": true,
+                "elementwise_affine": true,
+                "concat_input": true
+            }
+        },
+        "optimizer": {
+            "type": "MuonAdamWPack",
+            "shared_step": true
+        },
+        "online_ensembles": {
+            "greedy": {
+                "type": "greedy",
+                "update_type": "latest",
+                "include_current_ensemble_in_pool": true,
+                "patience": 32,
+                "options": {
+                    "max_ensemble_size": 32
+                }
+            }
+        },
+        "configs": [
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.3353189348090797,
+                    "num_embeddings": {
+                        "d_embedding": 12,
+                        "init_scale": 0.024365700014641997
+                    }
+                },
+                "optimizer": {
+                    "lr": 0.0003434814651388682,
+                    "weight_decay": 0.012334805700860018,
+                    "muon_lr": 0.01381635682257479
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0,
+                    "num_embeddings": {
+                        "d_embedding": 32,
+                        "init_scale": 1.389069254026063
+                    }
+                },
+                "optimizer": {
+                    "lr": 0.004977498101812185,
+                    "weight_decay": 0.002807662580871881,
+                    "muon_lr": 0.054481883691107354
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0,
+                    "num_embeddings": {
+                        "d_embedding": 12,
+                        "init_scale": 0.014930951369986466
+                    }
+                },
+                "optimizer": {
+                    "lr": 0.000547092569361319,
+                    "weight_decay": 0.008617626078400921,
+                    "muon_lr": 0.024699432654085012
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.09852714009281982,
+                    "num_embeddings": {
+                        "d_embedding": 20,
+                        "init_scale": 0.013609334974844286
+                    }
+                },
+                "optimizer": {
+                    "lr": 0.0022847001882471017,
+                    "weight_decay": 0.0017016464849773096,
+                    "muon_lr": 0.010906120646523016
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 1,
+                    "dropout": 0.32278512222800193,
+                    "num_embeddings": {
+                        "d_embedding": 8,
+                        "init_scale": 0.19552726186680713
+                    }
+                },
+                "optimizer": {
+                    "lr": 0.0007353656403746086,
+                    "weight_decay": 0.0406006030322793,
+                    "muon_lr": 0.02305605615367579
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.4972003948238397,
+                    "num_embeddings": {
+                        "d_embedding": 20,
+                        "init_scale": 0.016315836121466757
+                    }
+                },
+                "optimizer": {
+                    "lr": 0.0003143751986792313,
+                    "weight_decay": 0.002864600854019206,
+                    "muon_lr": 0.0068386873564543395
+                }
+            }
+        ]
+    }
+}

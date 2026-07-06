@@ -1,0 +1,142 @@
+{
+    "function": "project.tabpack.main",
+    "n_seeds": 5,
+    "base_config": {
+        "n_models": 9,
+        "batch_size": 256,
+        "n_epochs": -1,
+        "patience": 16,
+        "amp_dtype": "bfloat16",
+        "save_all_predictions": true,
+        "track_online_ensemble_history": true,
+        "track_experiments": true,
+        "data": {
+            "path": "data/tabred/sberbank-housing",
+            "num_policy": "noisy-quantile",
+            "extract_bin_from_num": true,
+            "bin_policy": "convert-to-cat",
+            "cat_policy": "ordinal",
+            "cache": true
+        },
+        "model": {
+            "activation": "ReLU",
+            "d_block": 384
+        },
+        "optimizer": {
+            "type": "MuonAdamWPack",
+            "shared_step": true
+        },
+        "online_ensembles": {
+            "greedy": {
+                "type": "greedy",
+                "update_type": "latest",
+                "include_current_ensemble_in_pool": true,
+                "patience": 32,
+                "options": {
+                    "max_ensemble_size": 32
+                }
+            }
+        },
+        "configs": [
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.19172075941288885
+                },
+                "optimizer": {
+                    "lr": 0.002213691468878238,
+                    "weight_decay": 0.03860866271460544,
+                    "muon_lr": 0.013680095279726922
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 4,
+                    "dropout": 0.01010919872016286
+                },
+                "optimizer": {
+                    "lr": 0.002597742757002251,
+                    "weight_decay": 0.2160082074140204,
+                    "muon_lr": 0.0549571618641162
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00032119792029072504,
+                    "weight_decay": 0.051273708746284376,
+                    "muon_lr": 0.01519656816607238
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 1,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00038613764757663413,
+                    "weight_decay": 0.6084765986559315,
+                    "muon_lr": 0.02563473332261551
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 4,
+                    "dropout": 0.29223803447788443
+                },
+                "optimizer": {
+                    "lr": 0.004308251552958122,
+                    "weight_decay": 0.007523892475314572,
+                    "muon_lr": 0.0030314999110705094
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.002916335779521407,
+                    "weight_decay": 0.8293893742197953,
+                    "muon_lr": 0.08349670090661039
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 1,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0005181839288996661,
+                    "weight_decay": 0.04700092162722424,
+                    "muon_lr": 0.05261412444320842
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.14175942329108332
+                },
+                "optimizer": {
+                    "lr": 0.0004420633412702457,
+                    "weight_decay": 0.003495045912526374,
+                    "muon_lr": 0.03776513352984674
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0034343268387689563,
+                    "weight_decay": 0.04279744576369351,
+                    "muon_lr": 0.008200169760865735
+                }
+            }
+        ]
+    }
+}

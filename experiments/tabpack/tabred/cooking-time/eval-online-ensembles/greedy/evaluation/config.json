@@ -1,0 +1,229 @@
+{
+    "function": "project.tabpack.main",
+    "n_seeds": 5,
+    "base_config": {
+        "n_models": 17,
+        "batch_size": 1024,
+        "n_epochs": -1,
+        "patience": 16,
+        "amp_dtype": "bfloat16",
+        "save_all_predictions": true,
+        "track_online_ensemble_history": true,
+        "track_experiments": true,
+        "data": {
+            "path": "data/tabred/cooking-time",
+            "extract_bin_from_num": true,
+            "bin_policy": "convert-to-cat",
+            "cat_policy": "ordinal",
+            "cache": true
+        },
+        "model": {
+            "activation": "ReLU",
+            "d_block": 384
+        },
+        "optimizer": {
+            "type": "MuonAdamWPack",
+            "shared_step": true
+        },
+        "online_ensembles": {
+            "greedy": {
+                "type": "greedy",
+                "update_type": "latest",
+                "include_current_ensemble_in_pool": true,
+                "patience": 32,
+                "options": {
+                    "max_ensemble_size": 32
+                }
+            }
+        },
+        "configs": [
+            {
+                "model": {
+                    "n_blocks": 4,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0021188277784090774,
+                    "weight_decay": 0.0022637229697395483,
+                    "muon_lr": 0.019047678084282035
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.001120325401917855,
+                    "weight_decay": 0.06859416411328696,
+                    "muon_lr": 0.017134364197119667
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00016559297646794824,
+                    "weight_decay": 0.008836597074694355,
+                    "muon_lr": 0.0053385282088766394
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00018624497078020396,
+                    "weight_decay": 0.002143509553579854,
+                    "muon_lr": 0.020542778286285958
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 1,
+                    "dropout": 0.41049661492396755
+                },
+                "optimizer": {
+                    "lr": 0.00014620834291169022,
+                    "weight_decay": 0.32646356775235214,
+                    "muon_lr": 0.0015566709318481197
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00032013743257688616,
+                    "weight_decay": 0.27630799986965465,
+                    "muon_lr": 0.006208854487201753
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00032119792029072504,
+                    "weight_decay": 0.051273708746284376,
+                    "muon_lr": 0.01519656816607238
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0005407132116163686,
+                    "weight_decay": 0.4893727555349509,
+                    "muon_lr": 0.0054340513757048575
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 3,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.002984833645205143,
+                    "weight_decay": 0.0030724074111466446,
+                    "muon_lr": 0.017026254807538856
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.16000857541123392
+                },
+                "optimizer": {
+                    "lr": 0.0004482225003718453,
+                    "weight_decay": 0.058203800125910955,
+                    "muon_lr": 0.04593004918313165
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 4,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0011779100684624346,
+                    "weight_decay": 0.4196274596407562,
+                    "muon_lr": 0.00385514368272862
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 1,
+                    "dropout": 0.005713729312515514
+                },
+                "optimizer": {
+                    "lr": 0.002037950248723671,
+                    "weight_decay": 0.0027595606036889134,
+                    "muon_lr": 0.0014422620135618053
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.14175942329108332
+                },
+                "optimizer": {
+                    "lr": 0.0004420633412702457,
+                    "weight_decay": 0.003495045912526374,
+                    "muon_lr": 0.03776513352984674
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 1,
+                    "dropout": 0.3887037809243766
+                },
+                "optimizer": {
+                    "lr": 0.0002758996536384046,
+                    "weight_decay": 0.01322633181347477,
+                    "muon_lr": 0.014969223419542672
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0006043400175002276,
+                    "weight_decay": 0.0013609334974844284,
+                    "muon_lr": 0.03977331310947928
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.0002557332776646808,
+                    "weight_decay": 0.0030312130880886085,
+                    "muon_lr": 0.03915461419278378
+                }
+            },
+            {
+                "model": {
+                    "n_blocks": 2,
+                    "dropout": 0.0
+                },
+                "optimizer": {
+                    "lr": 0.00020639737255578346,
+                    "weight_decay": 0.01598742434753529,
+                    "muon_lr": 0.07220758740267613
+                }
+            }
+        ]
+    }
+}
