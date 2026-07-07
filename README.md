@@ -1,6 +1,6 @@
 # TabPack: Efficient Hyperparameter Ensembles for Tabular Deep Learning (ICML 2026)<!-- omit in toc -->
 
-:scroll: [arXiv](https://arxiv.org/abs/2507.TODO)
+:scroll: [arXiv](https://arxiv.org/abs/2607.05380)
 &nbsp; :books: [Other tabular DL projects](https://github.com/yandex-research/rtdl)
 
 This is the official repository of the paper "TabPack: Efficient Hyperparameter Ensembles for Tabular Deep Learning".
