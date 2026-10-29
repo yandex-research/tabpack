@@ -1,0 +1,64 @@
+# To avoid the need for network access, only built-in and local hooks are used.
+[[repos]]
+repo = "builtin"
+hooks = [
+    { id = "check-added-large-files" },
+    { id = "check-case-conflict" },
+    { id = "check-executables-have-shebangs" },
+    { id = "check-json" },
+    { id = "check-merge-conflict" },
+    { id = "check-shebang-scripts-are-executable" },
+    { id = "check-symlinks" },
+    { id = "check-toml" },
+    { id = "check-vcs-permalinks" },
+    { id = "destroyed-symlinks" },
+    { id = "detect-private-key" },
+    { id = "end-of-file-fixer", exclude_types = ["json"] },
+    { id = "trailing-whitespace", args = ["--markdown-linebreak-ext=md"] },
+]
+
+[[repos]]
+repo = "local"
+hooks = [
+    {
+        # Reference: https://github.com/astral-sh/ruff-pre-commit/blob/c53b915162b475dfc95c73f94219e6f87ace2fca/.pre-commit-hooks.yaml#L1
+        id = "ruff-check",
+        name = "ruff check",
+        description = "Run 'ruff check' for extremely fast Python linting",
+        entry = "uv run ruff check --force-exclude",
+        language = "system",
+        types_or = ["python", "pyi", "jupyter"],
+        args = [],
+        require_serial = true,
+        additional_dependencies = [],
+        minimum_prek_version = "0.5.0",
+    },
+    {
+        # Reference: https://github.com/astral-sh/ruff-pre-commit/blob/c53b915162b475dfc95c73f94219e6f87ace2fca/.pre-commit-hooks.yaml#L12
+        id = "ruff-format",
+        name = "ruff format",
+        description = "Run 'ruff format' for extremely fast Python formatting",
+        entry = "uv run ruff format --force-exclude",
+        language = "system",
+        types_or = ["python", "pyi", "jupyter"],
+        args = [],
+        require_serial = true,
+        additional_dependencies = [],
+        minimum_prek_version = "0.5.0",
+    },
+    {
+        # Reference: https://github.com/astral-sh/ty-pre-commit/blob/cedca67f9a9e6303431e212951454426df990fae/.pre-commit-hooks.yaml
+        id = "ty",
+        name = "ty check",
+        description = "Run 'ty check' for extremely fast Python type checking",
+        entry = "uv run ty check --force-exclude",
+        language = "system",
+        types_or = ["python", "pyi", "jupyter"],
+        args = [],
+        pass_filenames = false,
+        always_run = true,
+        require_serial = true,
+        additional_dependencies = [],
+        minimum_prek_version = "0.5.0",
+    },
+]
