@@ -1480,6 +1480,7 @@ class _TabPackConfig:
     batch_size: int
     max_epochs: int | None
     early_stopping_patience: int | None
+    time_limit: float | None
 
     # Per-model hyperparameters
     per_model_hyperparameters: list[HyperparameterDict] | None
@@ -1764,6 +1765,7 @@ def _check_train_args(
             )
         )
         or config.early_stopping_patience is not None
+        or config.time_limit is not None
         or (
             config.ensembles
             and config.stop_when_all_ensembles_are_finalized
@@ -1775,10 +1777,15 @@ def _check_train_args(
     ):
         raise ValueError(
             'Training has no stopping condition. Set an epoch limit globally or for'
-            ' every model, enable early stopping for models, or configure all ensembles'
-            ' with `online=True` and early stopping and set'
+            ' every model, enable early stopping for models, set a time limit, or'
+            ' configure all ensembles with `online=True` and early stopping and set'
             ' `stop_when_all_ensembles_are_finalized=True`'
         )
+
+    if config.time_limit is not None and not (
+        math.isfinite(config.time_limit) and config.time_limit > 0
+    ):
+        raise ValueError('The time limit must be a positive finite number of seconds')
 
     if config.per_model_hyperparameters is not None:
         if len(config.per_model_hyperparameters) != config.n_models:
@@ -2420,6 +2427,7 @@ class RetrainedTabPack:
 def _train(
     config: _TabPackConfig, datasets: dict[DatasetName, dict[str, Tensor]]
 ) -> TrainedTabPack:
+    start_time = time.perf_counter()
     _check_train_args(config, datasets)
 
     # >>> Efficiency
@@ -2873,12 +2881,17 @@ def _train(
 
         # >>> Stopping condition
 
-        training_loop_is_running = len(
-            finished_best_checkpoint_keys
-        ) < config.n_models and (
-            not ensembles
-            or not config.stop_when_all_ensembles_are_finalized
-            or any(x.is_running() for x in ensembles.values())
+        training_loop_is_running = (
+            len(finished_best_checkpoint_keys) < config.n_models
+            and (
+                not ensembles
+                or not config.stop_when_all_ensembles_are_finalized
+                or any(x.is_running() for x in ensembles.values())
+            )
+            and (
+                config.time_limit is None
+                or time.perf_counter() - start_time < config.time_limit
+            )
         )
 
         # >>> Models replacement and removal
@@ -3076,6 +3089,7 @@ def train(
     batch_size: int,
     max_epochs: int | None,
     early_stopping_patience: int | _Missing | None = _MISSING,
+    time_limit: float | None = None,
     per_model_hyperparameters: list[HyperparameterDict] | None,
     eval_metrics: dict[DatasetName, dict[MetricName, MetricFn]],
     eval_criterion: EvalCriterionConfig | None,
@@ -3144,6 +3158,12 @@ def train(
             improvement in `eval_criterion` tolerated before stopping each model.
             `None` disables model-level early stopping. It must be provided when
             `eval_criterion` is set.
+        time_limit: the time budget in seconds, counted from the start of the call.
+            When it runs out, training ends after the current epoch, the same way it
+            ends when all ensembles are finalized: models that are still training keep
+            their best checkpoints so far, models that have not started are skipped,
+            and each ensemble keeps its best version so far. At least one epoch always
+            runs. `None` means no time limit.
         per_model_hyperparameters: a list of hyperparameter dictionaries, one
             per model, with optional `"model"`, `"optimizer"`, and `"max_epochs"`
             entries. `None` means using only the shared hyperparameters, in which case
@@ -3354,6 +3374,8 @@ def retrain(
         ],
         max_epochs=None,
         early_stopping_patience=None,
+        # Retraining runs each member for its recorded number of epochs.
+        time_limit=None,
         eval_metrics={},
         eval_criterion=None,
         ensembles={},
