@@ -156,6 +156,7 @@ class _TabPackEstimator(BaseEstimator):
             int | IntUniformDistribution | HyperparameterBounds[int] | None
         ) = None,
         early_stopping_patience: int | None = 16,
+        time_limit: float | None = None,
         # Per-model hyperparameters
         per_model_hyperparameters: list[PerModelHyperparameters] | None = None,
         # Evaluation
@@ -233,6 +234,10 @@ class _TabPackEstimator(BaseEstimator):
             max_epochs: the maximum number of training epochs per model.
             early_stopping_patience: the number of epochs without improvement
                 tolerated before stopping each model.
+            time_limit: the time budget for `fit` in seconds. When it runs out,
+                training ends after the current epoch with the best models and
+                ensembles found so far. `None` means no time limit. `refit` does not
+                use it, since it retrains a fixed number of epochs.
             per_model_hyperparameters: hyperparameters for each model, overriding
                 the shared values.
             eval_datasets: the datasets used to evaluate individual models.
@@ -298,6 +303,7 @@ class _TabPackEstimator(BaseEstimator):
         self.batch_size = batch_size
         self.max_epochs = max_epochs
         self.early_stopping_patience = early_stopping_patience
+        self.time_limit = time_limit
 
         self.per_model_hyperparameters = per_model_hyperparameters
 
@@ -741,6 +747,7 @@ class _TabPackEstimator(BaseEstimator):
             'optimizer': optimizer_config,
             'batch_size': batch_size,
             'max_epochs': max_epochs,
+            'time_limit': self.time_limit,
             'per_model_hyperparameters': per_model_hyperparameters,
             'eval_metrics': eval_metrics,
             'eval_criterion': eval_criterion,
@@ -1072,6 +1079,7 @@ class _TabPackEstimator(BaseEstimator):
             train_kwargs.pop(name, None)
         train_kwargs.update(
             max_epochs=None,
+            time_limit=None,
             per_model_hyperparameters=[
                 copy.deepcopy(hyperparameters)
                 for _ in range(n_repeats)
