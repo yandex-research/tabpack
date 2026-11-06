@@ -1493,7 +1493,10 @@ class _TabPackConfig:
     ensembles: dict[EnsembleName, EnsembleConfig]
     ensemble_eval_metrics: dict[DatasetName, dict[MetricName, MetricFn]]
     ensemble_eval_criterion: EvalCriterionConfig | None
+
+    # Training loop
     stop_when_all_ensembles_are_finalized: bool
+    training_loop_time_budget: float | None
 
     # Efficiency
     max_pack_size: int
@@ -1754,6 +1757,12 @@ def _check_train_args(
     ):
         raise ValueError('Set `max_epochs` either globally or per model, not both')
 
+    if config.training_loop_time_budget is not None and (
+        not math.isfinite(config.training_loop_time_budget)
+        or config.training_loop_time_budget <= 0
+    ):
+        raise ValueError('The training loop time budget must be finite and positive')
+
     if not (
         config.max_epochs is not None
         or (
@@ -1772,11 +1781,12 @@ def _check_train_args(
                 for x in config.ensembles.values()
             )
         )
+        or config.training_loop_time_budget is not None
     ):
         raise ValueError(
-            'Training has no stopping condition. Set an epoch limit globally or for'
-            ' every model, enable early stopping for models, or configure all ensembles'
-            ' with `online=True` and early stopping and set'
+            'Training has no stopping condition. Set a time budget, set an epoch limit'
+            ' globally or for every model, enable early stopping for models, or'
+            ' configure all ensembles with `online=True` and early stopping and set'
             ' `stop_when_all_ensembles_are_finalized=True`'
         )
 
@@ -2873,12 +2883,17 @@ def _train(
 
         # >>> Stopping condition
 
-        training_loop_is_running = len(
-            finished_best_checkpoint_keys
-        ) < config.n_models and (
-            not ensembles
-            or not config.stop_when_all_ensembles_are_finalized
-            or any(x.is_running() for x in ensembles.values())
+        training_loop_is_running = (
+            len(finished_best_checkpoint_keys) < config.n_models
+            and (
+                not ensembles
+                or not config.stop_when_all_ensembles_are_finalized
+                or any(x.is_running() for x in ensembles.values())
+            )
+            and (
+                config.training_loop_time_budget is None
+                or get_training_loop_time() < config.training_loop_time_budget
+            )
         )
 
         # >>> Models replacement and removal
@@ -2968,7 +2983,7 @@ def _train(
 
     training_loop_time = get_training_loop_time()
 
-    # Ensemble-level stopping can leave models unfinished; save their best
+    # Training-loop-level stopping can leave models unfinished; save their best
     # checkpoints too, even if no ensemble selected them.
     running_pack_mask = training_state.is_running(
         early_stopping_patience=config.early_stopping_patience
@@ -3086,6 +3101,7 @@ def train(
     ) = _MISSING,
     ensemble_eval_criterion: EvalCriterionConfig | _Missing | None = _MISSING,
     stop_when_all_ensembles_are_finalized: bool | _Missing = _MISSING,
+    training_loop_time_budget: float | None = None,
     seed: int | None = None,
     max_pack_size: int | None = None,
     device: int | str | torch.device,
@@ -3112,7 +3128,7 @@ def train(
     models trained in parallel is limited, models that have not started yet begin
     training as others finish. Depending on the provided arguments, the run continues
     either until all models finish or until all ensembles are finalized (even if some
-    models are still training).
+    models are still training), or until the time budget is reached.
 
     The result contains the selected checkpoints for making predictions with individual
     models or ensembles on new data, along with evaluation histories for inspecting
@@ -3168,6 +3184,9 @@ def train(
         stop_when_all_ensembles_are_finalized: whether to end training once all
             ensembles are finalized, even if some models are still training.
             Must be provided when `ensembles` is nonempty.
+        training_loop_time_budget: the time budget in seconds for the global training
+            loop. `None` means infinite time budget. Checked after each complete epoch,
+            so at least one epoch runs and the budget may be exceeded.
         seed: the seed for the PyTorch **global** random generators used during
             training. Also, if provided, when the function returns, the state of the
             generators is restored to what it was before the function call. `None` means
@@ -3360,6 +3379,7 @@ def retrain(
         ensemble_eval_metrics={},
         ensemble_eval_criterion=None,
         stop_when_all_ensembles_are_finalized=False,
+        training_loop_time_budget=None,
     )
     with (
         contextlib.nullcontext()

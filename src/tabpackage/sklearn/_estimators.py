@@ -172,7 +172,9 @@ class _TabPackEstimator(BaseEstimator):
         ensemble_eval_metrics: list[MetricName] | None = None,
         ensemble_eval_criterion_dataset: DatasetName | None = None,
         ensemble_eval_criterion_metric: MetricName | Literal['none'] | None = None,
+        # Training loop
         stop_when_all_ensembles_are_finalized: bool = True,
+        training_loop_time_budget: float | None = None,
         # Reproducibility
         random_state: int | np.random.RandomState | None = None,
         # Efficiency
@@ -251,6 +253,10 @@ class _TabPackEstimator(BaseEstimator):
                 version of each ensemble and guide its early stopping.
             stop_when_all_ensembles_are_finalized: whether to end training once all
                 ensembles are finalized, even if some models are still training.
+            training_loop_time_budget: the time budget in seconds for the global
+                training loop. `None` means infinite time budget. Checked after each
+                complete epoch, so at least one epoch runs and the budget may be
+                exceeded. Not applied during `refit`.
             random_state: controls randomness in hyperparameter sampling and training.
             max_pack_size: the maximum number of models trained in parallel.
             device: the device used for training and prediction.
@@ -312,9 +318,11 @@ class _TabPackEstimator(BaseEstimator):
         self.ensemble_eval_metrics = ensemble_eval_metrics
         self.ensemble_eval_criterion_dataset = ensemble_eval_criterion_dataset
         self.ensemble_eval_criterion_metric = ensemble_eval_criterion_metric
+
         self.stop_when_all_ensembles_are_finalized = (
             stop_when_all_ensembles_are_finalized
         )
+        self.training_loop_time_budget = training_loop_time_budget
 
         self.random_state = random_state
 
@@ -746,6 +754,7 @@ class _TabPackEstimator(BaseEstimator):
             'eval_criterion': eval_criterion,
             'eval_batch_size': eval_batch_size,
             'ensembles': ensemble_configs,
+            'training_loop_time_budget': self.training_loop_time_budget,
             'max_pack_size': self.max_pack_size,
             'device': device,
             'aux_device': aux_device,
@@ -904,6 +913,15 @@ class _TabPackEstimator(BaseEstimator):
         prediction_ensemble = self._resolve_prediction_ensemble(
             list(train_kwargs['ensembles'])
         )
+        if (
+            prediction_ensemble is not None
+            and not train_kwargs['ensembles'][prediction_ensemble].online
+            and train_kwargs['training_loop_time_budget'] is not None
+        ):
+            raise ValueError(
+                'Setting the training time budget is not allowed when the prediction'
+                ' ensemble is an offline ensemble'
+            )
         predictor_key = (
             None
             if prediction_ensemble is None
@@ -1068,6 +1086,7 @@ class _TabPackEstimator(BaseEstimator):
             'ensemble_eval_metrics',
             'ensemble_eval_criterion',
             'stop_when_all_ensembles_are_finalized',
+            'training_loop_time_budget',
         ):
             train_kwargs.pop(name, None)
         train_kwargs.update(
