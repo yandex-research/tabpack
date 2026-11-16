@@ -39,6 +39,7 @@ import tabpackage.metrics  # Metric computation for model packs
 import tabpackage.nn  # Neural network module packs
 import tabpackage.optim  # Optimizers packs
 import tabpackage.utils.torch  # Generic PyTorch utilities
+from tabpackage import _instrument  # Optional profiling hooks (no-op)
 
 KWArgs: TypeAlias = dict[str, Any]
 """Keyword arguments for a callable."""
@@ -2664,13 +2665,17 @@ def _train(
             if config.show_progress_bar and ProgressBar is not None
             else batch_idx_list
         ):  # batch_idx.shape: (pack_size, batch_size)
-            batch = {
-                k: v[batch_idx].to(config.device) for k, v in datasets['train'].items()
-            }
+            with _instrument.phase('gather'):
+                batch = {
+                    k: v[batch_idx].to(config.device)
+                    for k, v in datasets['train'].items()
+                }
 
             with compilation_context:
-                y_pred = forward(model_pack, batch, autocast=autocast)
-                losses = config.loss_fn(y_pred, batch['y'])
+                with _instrument.phase('forward'):
+                    y_pred = forward(model_pack, batch, autocast=autocast)
+                with _instrument.phase('loss'):
+                    losses = config.loss_fn(y_pred, batch['y'])
                 if losses.shape != (model_pack.pack_size,):
                     raise ValueError(
                         'The loss function must return one scalar per model'
@@ -2678,10 +2683,14 @@ def _train(
 
                 # The scale of the gradients should not depend on the number of models,
                 # so the individual losses are summed, not averaged.
-                loss = losses.sum()
-                loss.backward()
-            optimizer_pack.step()
-            optimizer_pack.zero_grad()
+                with _instrument.phase('backward'):
+                    loss = losses.sum()
+                    loss.backward()
+            with _instrument.phase('optimizer'):
+                optimizer_pack.step()
+            with _instrument.phase('zero_grad'):
+                optimizer_pack.zero_grad()
+            _instrument.step_end()
 
             training_loop_step += 1
             training_state.steps.add_(1)
@@ -2695,18 +2704,19 @@ def _train(
         # >>> Evaluation phase
 
         # Evaluate the models.
-        (latest_predictions, latest_metrics), eval_batch_size = evaluate(
-            model_pack=model_pack,
-            prediction_transform=config.prediction_transform,
-            datasets=datasets,
-            labels=labels,
-            metric_fns=config.eval_metrics,
-            prediction_dataset_names=prediction_dataset_names,
-            batch_size=eval_batch_size,
-            device=config.device,
-            aux_device=config.aux_device,
-            autocast=autocast,
-        )
+        with _instrument.phase('eval'):
+            (latest_predictions, latest_metrics), eval_batch_size = evaluate(
+                model_pack=model_pack,
+                prediction_transform=config.prediction_transform,
+                datasets=datasets,
+                labels=labels,
+                metric_fns=config.eval_metrics,
+                prediction_dataset_names=prediction_dataset_names,
+                batch_size=eval_batch_size,
+                device=config.device,
+                aux_device=config.aux_device,
+                autocast=autocast,
+            )
         history.append(
             {
                 'time': get_training_loop_time(),
@@ -2925,6 +2935,7 @@ def _train(
             n_running_models += n_models_to_replace
             del n_models_to_replace
         del running_pack_mask, running_pack_idx, stopped_pack_idx
+        _instrument.epoch_end()
 
         # >>> Printing
 

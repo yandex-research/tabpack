@@ -1,0 +1,10 @@
+# Dev tools from the repo's `dev` dependency group (pyproject.toml), pinned to the
+# versions in uv.lock so lint/type-check results match `make lint-fix` on the host.
+# Installed in a separate image layer so changing them does not reinstall torch.
+onnx==1.23.2
+onnxscript==0.7.2
+onnxruntime==1.31.1
+polars==1.0.0
+ruff==0.16.8
+ty==0.0.84
+xdoctest==1.3.2

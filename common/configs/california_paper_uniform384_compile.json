@@ -1,0 +1,46 @@
+{
+  "source": "PR #2 (dev/veleboks-profiling-layout) dev/veleboks/configs/paper_california_compile.json",
+  "dataset": "california-sklearn",
+  "name": "california_paper_uniform384_compile",
+  "seed": 42,
+  "n_models": 64,
+  "max_ensemble_size": 32,
+  "widths": [
+    384
+  ],
+  "depth_min": 1,
+  "depth_max": 3,
+  "embedding_dims": [
+    8,
+    12,
+    16,
+    20,
+    24,
+    28,
+    32
+  ],
+  "init_scale": [
+    0.01,
+    10.0
+  ],
+  "dropout_max": 0.5,
+  "adamw_lr": [
+    0.0001,
+    0.005
+  ],
+  "muon_lr": [
+    0.001,
+    0.1
+  ],
+  "weight_decay": [
+    0.001,
+    1.0
+  ],
+  "batch_size": 256,
+  "max_epochs": 60,
+  "inference_batch_size": 1024,
+  "model_patience": 16,
+  "ensemble_patience": 32,
+  "profile_epoch": 3,
+  "compile_model": true
+}

@@ -1,0 +1,41 @@
+{
+  "name": "synthetic_small",
+  "dataset": "synthetic",
+  "synthetic": {
+    "n_train": 16384,
+    "n_val": 4096,
+    "n_test": 4096,
+    "n_num": 16,
+    "n_cat": 2,
+    "cardinality": 8
+  },
+  "seed": 0,
+  "n_models": 8,
+  "max_ensemble_size": 4,
+  "widths": [
+    32,
+    64,
+    128
+  ],
+  "depth_min": 1,
+  "depth_max": 3,
+  "dropout_max": 0.5,
+  "adamw_lr": [
+    0.0001,
+    0.005
+  ],
+  "muon_lr": [
+    0.001,
+    0.1
+  ],
+  "weight_decay": [
+    0.001,
+    1.0
+  ],
+  "batch_size": 512,
+  "max_epochs": 3,
+  "inference_batch_size": 2048,
+  "model_patience": 16,
+  "ensemble_patience": 32,
+  "profile_epoch": 2
+}

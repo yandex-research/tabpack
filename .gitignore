@@ -45,6 +45,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+/data/
 nosetests.xml
 coverage.xml
 *.cover
@@ -153,6 +154,7 @@ activemq-data/
 .env
 .envrc
 .venv
+.venv-tabpack
 env/
 venv/
 ENV/

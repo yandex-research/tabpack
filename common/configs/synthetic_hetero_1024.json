@@ -1,0 +1,43 @@
+{
+  "name": "synthetic_hetero_1024",
+  "dataset": "synthetic",
+  "synthetic": {
+    "n_train": 262144,
+    "n_val": 32768,
+    "n_test": 32768,
+    "n_num": 64,
+    "n_cat": 4,
+    "cardinality": 16
+  },
+  "seed": 0,
+  "n_models": 64,
+  "max_ensemble_size": 32,
+  "widths": [
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "depth_min": 1,
+  "depth_max": 4,
+  "dropout_max": 0.5,
+  "adamw_lr": [
+    0.0001,
+    0.005
+  ],
+  "muon_lr": [
+    0.001,
+    0.1
+  ],
+  "weight_decay": [
+    0.001,
+    1.0
+  ],
+  "batch_size": 1024,
+  "max_epochs": 4,
+  "inference_batch_size": 4096,
+  "model_patience": 16,
+  "ensemble_patience": 32,
+  "profile_epoch": 3
+}

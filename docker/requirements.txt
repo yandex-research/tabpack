@@ -1,0 +1,11 @@
+# Installed into /opt/venv by docker/Dockerfile (torch from the cu132 index).
+# The exact resolved set is frozen inside the image at /opt/pip-freeze.txt.
+torch==2.15.0
+numpy>=2,<3
+scipy>=1.13,<2
+scikit-learn>=1.5,<2
+pandas>=2.2,<3
+joblib>=1.4
+tqdm>=4.66
+pytest>=8
+ipykernel>=6.29
