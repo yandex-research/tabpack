@@ -1,9 +1,0 @@
-[build-system]
-requires = ["uv_build>=0.11.19,<0.12.0"]
-build-backend = "uv_build"
-
-[project]
-name = "tabpack-experimental"
-version = "0.0.0"
-description = "Pepilica's TabPack research kernels and benchmark helpers."
-requires-python = ">=3.11,<4"
